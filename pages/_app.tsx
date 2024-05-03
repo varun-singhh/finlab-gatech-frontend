@@ -8,6 +8,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { baselightTheme } from "../../gatech/src/components/theme/DefaultTheme";
 import { Router } from "next/dist/client/router";
 import { StyledEngineProvider } from "@mui/material/styles";
+import { Provider } from "react-redux";
+import store from "../store";
 
 const progress = new ProgressBar({
   size: 4,
@@ -43,9 +45,9 @@ const App = (props: MyAppProps) => {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        {/* <Provider>*/}
-        {getLayout(<Component {...pageProps} />)}
-        {/* </Provider> */}
+        <Provider store={store}>
+          {getLayout(<Component {...pageProps} />)}
+        </Provider>
       </ThemeProvider>
     </StyledEngineProvider>
   );

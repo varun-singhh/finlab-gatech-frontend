@@ -1,15 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Select, MenuItem } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import DashboardCard from "../../gatech/src/components/report/card";
 import dynamic from "next/dynamic";
 import PageContainer from "@/components/container/pagecontainer";
 import Form from "@/components/container/form";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
+
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const SalesOverview = () => {
-  const [year, setYear] = useState("2024");
-
+  const rootState = useSelector((state: RootState) => state?.report);
+  const [data, setData] = useState({
+    incomeStatement: {
+      netIncome: 0,
+      netIncomePerShare: 0,
+      dilutedEarningsPerShare: 0,
+      EBITDA: 0,
+      operatingIncome: 0,
+      revenue: 0,
+    },
+    balanceSheet: {
+      totalAssets: 0,
+      totalLiabilities: 0,
+      totalEquity: 0,
+      cashAndCashEquivalents: 0,
+      shortTermInvestments: 0,
+      accountsReceivableNet: 0,
+    },
+    cashFlowStatement: {
+      netCashProvidedByOperatingActivities: 0,
+      netCashUsedInInvestingActivities: 0,
+      netCashUsedInFinancingActivities: 0,
+      cashAndCashEquivalentsBeginningOfPeriod: 0,
+      cashAndCashEquivalentsEndOfPeriod: 0,
+    },
+    financialMetrics: {
+      revenue: 0,
+      netIncome: 0,
+      earningsPerShare: 0,
+      freeCashFlow: 0,
+    },
+    businessInsights: {
+      revenueGrowth: 0,
+      netIncomeGrowth: 0,
+      earningsPerShareGrowth: 0,
+      freeCashFlowGrowth: 0,
+    },
+  });
   // Generate years from 1995 to current year
   const currentYear = new Date().getFullYear();
   const years = [];
@@ -17,53 +56,13 @@ const SalesOverview = () => {
     years.push(i);
   }
 
-  const handleChange = (event: any) => {
-    setYear(event.target.value);
-  };
-
+  useEffect(() => {
+    setData(rootState?.data?.data ?? data);
+  }, [rootState?.data?.data]);
   // Chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
   const secondary = theme.palette.secondary.main;
-
-  // Data extraction from JSON response
-  const data = {
-    incomeStatement: {
-      netIncome: 257.6,
-      netIncomePerShare: 30.62,
-      dilutedEarningsPerShare: 29.96,
-      EBITDA: 346.2,
-      operatingIncome: 260.1,
-      revenue: 257.6,
-    },
-    balanceSheet: {
-      totalAssets: 439.5,
-      totalLiabilities: 185.2,
-      totalEquity: 254.3,
-      cashAndCashEquivalents: 142.8,
-      shortTermInvestments: 10.1,
-      accountsReceivableNet: 51.6,
-    },
-    cashFlowStatement: {
-      netCashProvidedByOperatingActivities: 145.4,
-      netCashUsedInInvestingActivities: 10.9,
-      netCashUsedInFinancingActivities: 11.8,
-      cashAndCashEquivalentsBeginningOfPeriod: 132.0,
-      cashAndCashEquivalentsEndOfPeriod: 142.8,
-    },
-    financialMetrics: {
-      revenue: 257.6,
-      netIncome: 20.6,
-      earningsPerShare: 2.65,
-      freeCashFlow: 56.1,
-    },
-    businessInsights: {
-      revenueGrowth: "23%",
-      netIncomeGrowth: "18%",
-      earningsPerShareGrowth: "15%",
-      freeCashFlowGrowth: "31%",
-    },
-  };
 
   // Chart options for financial data
   const optionsFinancial: any = {
@@ -117,7 +116,7 @@ const SalesOverview = () => {
       },
     },
     xaxis: {
-      categories: Object.keys(data.incomeStatement),
+      categories: Object.keys(data?.incomeStatement),
       axisBorder: {
         show: false,
       },
@@ -132,7 +131,7 @@ const SalesOverview = () => {
   const seriesFinancial: any = [
     {
       name: "Values",
-      data: Object.values(data.incomeStatement),
+      data: Object.values(data?.incomeStatement),
     },
   ];
 
@@ -188,7 +187,7 @@ const SalesOverview = () => {
       },
     },
     xaxis: {
-      categories: Object.keys(data.businessInsights),
+      categories: Object.keys(data?.businessInsights),
       axisBorder: {
         show: false,
       },
@@ -250,7 +249,7 @@ const SalesOverview = () => {
       },
     },
     xaxis: {
-      categories: Object.keys(data.balanceSheet),
+      categories: Object.keys(data?.balanceSheet),
       axisBorder: {
         show: false,
       },
@@ -265,7 +264,7 @@ const SalesOverview = () => {
   const seriesBalanceSheet: any = [
     {
       name: "Values",
-      data: Object.values(data.balanceSheet),
+      data: Object.values(data?.balanceSheet),
     },
   ];
 
@@ -321,7 +320,7 @@ const SalesOverview = () => {
       },
     },
     xaxis: {
-      categories: Object.keys(data.cashFlowStatement),
+      categories: Object.keys(data?.cashFlowStatement),
       axisBorder: {
         show: false,
       },
@@ -336,7 +335,7 @@ const SalesOverview = () => {
   const seriesCashFlowStatement: any = [
     {
       name: "Values",
-      data: Object.values(data.cashFlowStatement),
+      data: Object.values(data?.cashFlowStatement),
     },
   ];
 
@@ -392,7 +391,7 @@ const SalesOverview = () => {
       },
     },
     xaxis: {
-      categories: Object.keys(data.financialMetrics),
+      categories: Object.keys(data?.financialMetrics),
       axisBorder: {
         show: false,
       },
@@ -407,7 +406,7 @@ const SalesOverview = () => {
   const seriesFinancialMetrics: any = [
     {
       name: "Values",
-      data: Object.values(data.financialMetrics),
+      data: Object.values(data?.financialMetrics),
     },
   ];
 
@@ -415,9 +414,7 @@ const SalesOverview = () => {
   const seriesBusiness: any = [
     {
       name: "Values",
-      data: Object.values(data.businessInsights).map((value: string) =>
-        parseFloat(value.replace("%", ""))
-      ),
+      data: Object.values(data?.businessInsights),
     },
   ];
 

@@ -1,0 +1,3 @@
+export const LOADING = "LOADING";
+export const REPORT_LOADED = "REPORT_LOADED";
+export const ERR_LOADING_REPORT = "ERR_LOADING_REPORT";
